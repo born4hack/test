@@ -1,0 +1,16 @@
+# Terraform state & internals
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform.lock.hcl
+
+# Binaries (DO NOT COMMIT)
+terraform.exe
+kubectl.exe
+k8s/kubectl.exe
+terraform/kubectl.exe
+
+# Logs & OS
+*.log
+Thumbs.db
+.DS_Store

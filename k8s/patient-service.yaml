@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-service
+  namespace: enterprise-platform
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: patient-service
+  template:
+    metadata:
+      labels:
+        app: patient-service
+    spec:
+      containers:
+      - name: patient-service
+        image: hashicorp/http-echo
+        args:
+        - "-text=Patient service responding"
+        ports:
+        - containerPort: 5678
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "300m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: patient-service
+  namespace: enterprise-platform
+spec:
+  selector:
+    app: patient-service
+  ports:
+  - port: 80
+    targetPort: 5678
