@@ -11,20 +11,35 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
-    - name: Set up kubectl
-      uses: azure/setup-kubectl@v3
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
       with:
-        version: 'latest'
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Configure kubeconfig
+    - name: Install kubectl
+      uses: azure/setup-kubectl@v4
+      with:
+        version: latest
+
+    - name: Install AWS CLI
       run: |
-        mkdir -p $HOME/.kube
-        echo "${{ secrets.KUBECONFIG_DATA }}" > $HOME/.kube/config
-        
+        sudo apt-get update
+        sudo apt-get install -y awscli
+
+    - name: Update kubeconfig for EKS
+      run: |
+        aws eks update-kubeconfig \
+          --name cep-eks-cluster-v2 \
+          --region ${{ secrets.AWS_REGION }}
+
+    - name: Verify cluster connection
+      run: |
+        kubectl get nodes
+
     - name: Deploy Kubernetes manifests
       run: |
-        kubectl config get-contexts
         kubectl apply -f k8s/ --validate=false
-
