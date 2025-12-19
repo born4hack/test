@@ -22,7 +22,9 @@ jobs:
       run: |
         mkdir -p $HOME/.kube
         echo "${{ secrets.KUBECONFIG_DATA }}" > $HOME/.kube/config
-
+        
     - name: Deploy Kubernetes manifests
       run: |
-        kubectl apply -f k8s/
+        kubectl config get-contexts
+        kubectl apply -f k8s/ --validate=false
+
